@@ -1,0 +1,140 @@
+module clock(system_clk,reset,select_sign,day_add,month_add,year_add,day,month,year);
+		input system_clk,reset,day_add,month_add,year_add;
+		input select_sign;
+
+		output [4:0] day;//最大31
+		output [3:0] month;//最大12
+		output [6:0] year;//最大99
+		 
+		reg [31:0]p;//最大24999999
+		 
+		reg [4:0] day=5'd8;
+		reg [4:0] day_set;
+		reg [3:0] day_month;
+		reg [6:0] day_year;
+		wire pulse_month;//月脉冲
+		reg [3:0] month;
+		reg [3:0] month_set;
+		wire pulse_year;//年脉冲
+		reg [6:0] year;
+		reg [6:0] year_set;
+		
+		//天部分
+		always@(posedge system_clk)
+		begin
+			if(!reset)
+				day<=5'd8;
+			else 
+				if(pulse_day) //天脉冲
+					if(month==1 || month==3 ||month==5 || month==7 || month==8 || month==10 || month==12)
+						if(day>=31)
+							day<=1;
+						else
+							day<=day+1;
+					else if(month==4 || month==6 ||month==9 || month==11)
+						if(day>=30)
+							day<=1;
+						else
+							day<=day+1;
+					else if(month==2 && (year%4==0))
+						if(day>=29)
+							day<=1;
+						else
+							day<=day+1;
+					else
+						if(day>=28)
+							day<=1;
+						else
+							day<=day+1;	
+				else if(!day_add)
+					day<=day_set;
+				else
+					day<=day;
+		end
+		//月脉冲的生成
+		assign pulse_month=((day==5'd28 && month==4'd2 && (year%4!=0) && pulse_day==1'b1)
+		||(day==5'd29 && month==4'd2 && (year%4==0) && pulse_day==1'b1) 
+		||(day==5'd30 && (month==4'd4 || month==4'd6 ||month==4'd9 || month==4'd11) && pulse_day==1'b1) 
+		||(day==5'd31 && (month==4'd1 || month==4'd3 ||month==4'd5 || month==4'd7 || month==4'd8 || month==4'd10 || month==4'd12) && pulse_day==1'b1));
+		//天的设置
+		always@(negedge day_add)
+		begin
+				day_set=day;
+				day_month=month;
+				day_year=year;
+				if(day_month==1 || day_month==3 ||day_month==5 || day_month==7 || day_month==8 || day_month==10 || day_month==12)
+					if(day_set>=31)
+						day_set<=1;
+					else
+						day_set<=day_set+1;
+				else if(day_month==4 || day_month==6 ||day_month==9 || day_month==11)
+					if(day_set>=30)
+						day_set<=1;
+					else
+						day_set<=day_set+1;
+				else if(day_month==2 && (day_year%4==0))   //闰年
+					if(day_set>=29)
+						day_set<=1;
+					else
+						day_set<=day_set+1;
+				else
+					if(day_set>=28)
+						day_set<=1;
+					else
+						day_set<=day_set+1;
+		end
+				
+		//月部分
+		always@(posedge system_clk)
+		begin
+			if(!reset)
+				month<=4'd12;
+			else 
+				if(pulse_month)
+					if(month>=12)
+						month<=1;
+					else
+						month<=month+1;
+				else if(!month_add)
+					month<=month_set;
+				else
+					month<=month;
+		end
+		//年脉冲的生成
+		assign pulse_year=(month==4'd12 && pulse_month==1'b1);
+		//月设置
+		always@(negedge month_add)
+		begin
+				month_set=month;
+				if(month_set>=12)
+					month_set=1;
+				else
+					month_set=month_set+1;
+		end
+		 
+		//年部分
+		always@(posedge system_clk)
+		begin
+			if(!reset)
+				year<=7'd21;
+			else 
+				if(pulse_year)
+					if(year>=99)
+						year<=0;
+					else
+						year<=year+1;
+				else if(!year_add)
+					year<=year_set;
+				else
+					year<=year;
+		end
+		//年设置
+		always@(negedge year_add)
+		begin
+				year_set=year;
+				if(year_set>=99)
+					year_set=0;
+				else
+					year_set=year_set+1;
+		end
+endmodule
