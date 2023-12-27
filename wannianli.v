@@ -213,9 +213,8 @@ module wannianli(CLK_50, nCR,system_clk,pulse_day,day_add,month_add,year_add,day
         q = day;
 
         // 使用蔡勒公式计算星期几//
-        xqj = (q + (13 * (m + 1) / 5) + k + (k / 4) + (p / 4) - 2 * p) % 7 - 1;
+        xqj = (q + (13 * (m + 1) / 5) + k + (k / 4) + (p / 4) - 2 * p) % 7-1;
         // 将结果调整为0到6范围内
         if (xqj < 0) xqj = xqj + 7;
     end
-
 endmodule

@@ -13,5 +13,6 @@ module Top_Clock (pulse_day,Hour, Minute, Second, _1Hz, nCR, AdjMinKey, AdjHrKey
 	 //Modulo_counter #(.MOD(24)) UT3(.CP(~HrCP), .RSTn(nCR), .En(Vdd), .Qbcd(Hour));
     assign MinCP = AdjMinKey ? _1Hz : (Second==8'h59); //时间校正
     assign HrCP = AdjHrKey ? _1Hz: ({Minute, Second }==16'h5959); 
+	 //产生天脉冲
 	 assign pulse_day =({Hour,Minute, Second }==24'h235959)?1'b1:1'b0; 
 endmodule

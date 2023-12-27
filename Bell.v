@@ -20,8 +20,7 @@ module Bell (ALARM_Clock, Set_Hr, Set_Min, Hour, Minute, Second, SetHrkey, SetMi
     _4bitcomparator SU6(MinH_EQU, Set_Min[7:4], Minute[7:4]);
     _4bitcomparator SU7(MinL_EQU, Set_Min[3:0], Minute[3:0]);
     assign Time_EQU=(HrH_EQU && HrL_EQU && MinH_EQU && MinL_EQU);
-    assign ALARM_Clock= CtrlBell ? (Time_EQU &&
-(((Second[0]==1'b1)&&_2Hz)||((Second[0]==1'b0)&&_500Hz))):1'b0;
+    assign ALARM_Clock= CtrlBell ? (Time_EQU &&(((Second[0]==1'b1)&&_2Hz)||((Second[0]==1'b0)&&_500Hz))):1'b0;
 endmodule
 //***********  _4bitcomparator.v ***** *******
 module _4bitcomparator (EQU, A, B); //4-bit comparator

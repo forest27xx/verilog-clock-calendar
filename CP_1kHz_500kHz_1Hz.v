@@ -30,7 +30,7 @@ module CP_1kHz_500kHz_1Hz_2Hz_4Hz(CLK_50, nRST, _1kHz, _500Hz,_1Hz,_2Hz,_4Hz);
     Divider50MHz U2(.CLK_50M(CLK_50),                           
 	.nCLR(nRST),               
 	 .CLK_1HzOut(_1Hz));
-     defparam        U2.N=30,                
+     defparam        U2.N=25,                
 	            U2.CLK_Freq =50000000,                
 	            U2.OUT_Freq =1;
 endmodule
